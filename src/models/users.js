@@ -37,10 +37,4 @@ User.belongsTo(Roles, {
 	onDelete: "CASCADE",
 });
 
-Roles.hasOne(User, {
-	foreignKey: "roleId",
-	sourceKey: "id",
-	onDelete: "CASCADE",
-});
-
 export default User;

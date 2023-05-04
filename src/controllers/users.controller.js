@@ -1,8 +1,14 @@
 import User from "../models/users.js";
+import Roles from "../models/roles.js";
 
 const getUsers = async (req, res) => {
 	try {
-		const users = await User.findAll();
+		const users = await User.findAll({
+			include: {
+				model: Roles,
+				attributes: ["name", "description"],
+			},
+		});
 
 		if (users) {
 			res.json({

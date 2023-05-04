@@ -4,6 +4,7 @@ import morgan from "morgan";
 import pkg from "../package.json" assert { type: "json" };
 import usersRoutes from "./routes/users.routes.js";
 import rolesRoutes from "./routes/roles.routes.js";
+import authRoutes from "./routes/auth.routes.js";
 
 const app = express();
 // Middlewares
@@ -25,5 +26,11 @@ app.get("/", (req, res) => {
 //Routes
 app.use("/api/users", usersRoutes);
 app.use("/api/roles", rolesRoutes);
+app.use("/api/auth", authRoutes);
+app.use("*", (req, res) => {
+	res.status(404).json({
+		error: "Not found",
+	});
+});
 
 export default app;

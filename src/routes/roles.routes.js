@@ -6,16 +6,17 @@ import {
 	deleteRole,
 	updateRole,
 } from "../controllers/roles.controller.js";
+import { authJwt } from "../middlewares/index.js";
 
 const router = Router();
 
 // /api/roles/
-router.get("/", getRoles);
-router.post("/", createRole);
+router.get("/", [authJwt.verifyToken, authJwt.isAdmin], getRoles);
+router.post("/", [authJwt.verifyToken, authJwt.isAdmin], createRole);
 
 // /api/roles/:id
-router.get("/:id", getRole);
-router.delete("/:id", deleteRole);
-router.put("/:id", updateRole);
+router.get("/:id", [authJwt.verifyToken, authJwt.isAdmin], getRole);
+router.delete("/:id", [authJwt.verifyToken, authJwt.isAdmin], deleteRole);
+router.put("/:id", [authJwt.verifyToken, authJwt.isAdmin], updateRole);
 
 export default router;

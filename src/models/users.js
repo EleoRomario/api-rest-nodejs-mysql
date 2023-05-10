@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config/database.js";
+import bcrypt from "bcryptjs";
 import Roles from "./roles.js";
 
 const User = sequelize.define(
@@ -36,5 +37,26 @@ User.belongsTo(Roles, {
 	sourceKey: "id",
 	onDelete: "CASCADE",
 });
+
+const encryptPassword = async (user) => {
+	const salt = await bcrypt.genSalt(10);
+	const hash = await bcrypt.hash(user.password, salt);
+	return (user.password = hash);
+};
+
+const comparePassword = async (password, recivedPassword) => {
+	return await bcrypt.compare(password, recivedPassword);
+};
+
+User.beforeCreate(encryptPassword);
+User.beforeUpdate(encryptPassword);
+
+const getRoles = async (user) => {
+	const roles = await Roles.findAll({ where: { id: user.roleId } });
+	return roles;
+};
+
+User.prototype.getRoles = getRoles;
+User.prototype.comparePassword = comparePassword;
 
 export default User;

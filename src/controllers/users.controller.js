@@ -22,7 +22,9 @@ const getUsers = async (req, res) => {
 			});
 		}
 	} catch (error) {
-		console.error(error);
+		return res.status(400).json({
+			message: error.message,
+		});
 	}
 };
 
@@ -48,33 +50,97 @@ const createUser = async (req, res) => {
 				data: {},
 			});
 		}
-		// res.send("createUser");
 	} catch (error) {
-		console.error(error);
+		return res.status(400).json({ error: error.message });
 	}
 };
 
 const getUser = async (req, res) => {
 	try {
-		res.send("getUser");
+		const { id } = req.params;
+
+		const user = await User.findOne({
+			where: { id: id },
+			include: {
+				model: Roles,
+				attributes: ["name", "description"],
+			},
+		});
+
+		if (user) {
+			return res.json({
+				message: "User found successfully",
+				data: user,
+			});
+		}
+
+		return res.json({
+			message: "User not found",
+			data: {},
+		});
 	} catch (error) {
-		console.error(error);
+		return res.status(400).json({ error: error.message });
 	}
 };
 
 const deleteUser = async (req, res) => {
 	try {
-		res.send("deleteUser");
+		const { id } = req.params;
+
+		const user = await User.destroy({
+			where: { id: id },
+		});
+
+		if (user) {
+			return res.json({
+				message: "User deleted successfully",
+				data: user,
+			});
+		}
+
+		return res.json({
+			message: "User not deleted",
+			data: {},
+		});
 	} catch (error) {
-		console.error(error);
+		return res.status(400).json({ error: error.message });
 	}
 };
 
 const updateUser = async (req, res) => {
 	try {
-		res.send("updateUser");
+		const { id } = req.params;
+		const { username, email, password, roleId } = req.body;
+
+		const user = await User.findOne({
+			where: { id: id },
+		});
+
+		if (user) {
+			const updatedUser = await User.update(
+				{
+					username,
+					email,
+					password,
+					roleId,
+				},
+				{
+					where: { id: id },
+				}
+			);
+
+			return res.json({
+				message: "User updated successfully",
+				data: updatedUser,
+			});
+		}
+
+		return res.json({
+			message: "User not updated",
+			data: {},
+		});
 	} catch (error) {
-		console.error(error);
+		return res.status(400).json({ error: error.message });
 	}
 };
 

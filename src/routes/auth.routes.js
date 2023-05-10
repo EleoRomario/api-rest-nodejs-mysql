@@ -1,10 +1,13 @@
 import { Router } from "express";
+import { config } from "dotenv";
 import {
 	signup,
 	signin,
 	signout,
 	refreshTokens,
 } from "../controllers/auth.controller.js";
+
+config();
 
 const router = Router();
 

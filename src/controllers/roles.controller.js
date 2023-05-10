@@ -26,24 +26,37 @@ const createRole = async (req, res) => {
 	try {
 		const { name, description } = req.body;
 
+		const role = await Role.findOne({
+			where: { name },
+		});
+
+		if (role) {
+			return res.status(400).json({
+				message: "Role already exists",
+				data: {},
+			});
+		}
+
 		const newRole = await Role.create({
 			name,
 			description,
 		});
 
 		if (newRole) {
-			res.json({
+			return res.json({
 				message: "Role created successfully",
 				data: newRole,
 			});
 		} else {
-			res.json({
+			return res.json({
 				message: "Role not created",
 				data: {},
 			});
 		}
 	} catch (error) {
-		console.error(error);
+		return res.status(500).json({
+			message: error.message,
+		});
 	}
 };
 
@@ -57,17 +70,82 @@ const getRole = async (req, res) => {
 
 const deleteRole = async (req, res) => {
 	try {
-		res.send("deleteRole");
+		const { id } = req.params;
+
+		const role = await Role.findOne({
+			where: { id },
+		});
+
+		if (!role) {
+			return res.status(400).json({
+				message: "Role not found",
+				data: {},
+			});
+		}
+
+		const deletedRole = await Role.destroy({
+			where: { id },
+		});
+
+		if (deletedRole) {
+			return res.json({
+				message: "Role deleted successfully",
+				data: deletedRole,
+			});
+		}
+
+		return res.json({
+			message: "Role not deleted",
+			data: {},
+		});
 	} catch (error) {
-		console.error(error);
+		return res.status(400).json({
+			message: error.message,
+		});
 	}
 };
 
 const updateRole = async (req, res) => {
 	try {
-		res.send("updateRole");
+		const { id } = req.params;
+		const { name, description } = req.body;
+
+		const role = await Role.findOne({
+			where: { id },
+		});
+
+		if (!role) {
+			return res.status(400).json({
+				message: "Role not found",
+				data: {},
+			});
+		}
+
+		const updatedRole = await Role.update(
+			{
+				name,
+				description,
+			},
+			{
+				where: { id },
+			}
+		);
+
+		if (updatedRole) {
+			return res.json({
+				message: "Role updated successfully",
+				data: updatedRole,
+			});
+		}
+
+		return res.json({
+			message: "Role not updated",
+			data: {},
+		});
 	} catch (error) {
-		console.error(error);
+		return res.status(400).json({
+			message: error.message,
+		});
 	}
 };
 

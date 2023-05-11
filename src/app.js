@@ -1,10 +1,12 @@
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
+import swaggerUi from "swagger-ui-express";
 import pkg from "../package.json" assert { type: "json" };
 import usersRoutes from "./routes/users.routes.js";
 import rolesRoutes from "./routes/roles.routes.js";
 import authRoutes from "./routes/auth.routes.js";
+import openApiConfiguration from "./routes/docs/swagger.js";
 
 const app = express();
 // Middlewares
@@ -22,6 +24,9 @@ app.get("/", (req, res) => {
 		version: app.get("pkg").version,
 	});
 });
+
+// Swagger Docs
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(openApiConfiguration));
 
 //Routes
 app.use("/api/users", usersRoutes);

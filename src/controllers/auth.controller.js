@@ -6,7 +6,9 @@ const signup = async (req, res) => {
 		const { username, email, password, roleId } = req.body;
 
 		if (!username || !email || !password || !roleId) {
-			return res.status(400).json({ error: "All fields are required" });
+			return res
+				.status(400)
+				.json({ error: "Todos los campos son obligatorios" });
 		}
 
 		if (email) {
@@ -14,7 +16,9 @@ const signup = async (req, res) => {
 				where: { email: email },
 			});
 			if (emailExist) {
-				return res.status(400).json({ error: "Email is taken" });
+				return res.status(409).json({
+					error: "El correo electrónico ya está registrado",
+				});
 			}
 		}
 
@@ -26,10 +30,10 @@ const signup = async (req, res) => {
 		});
 
 		if (!newUser)
-			return res.status(400).json({ error: "User not created" });
+			return res.status(500).json({ error: "Usuario no creado" });
 
 		return res.status(201).json({
-			message: "Signup success! Please signin.",
+			message: "!Registro exitoso! Por favor inicie sesión.",
 		});
 	} catch (error) {
 		return res.status(400).json({ error: error.message });
@@ -43,7 +47,7 @@ const signout = (req, res) => {
 			message: "signed out",
 		});
 	} catch (error) {
-		return res.status(400).json({ error: error.message });
+		return res.status(500).json({ error: error.message });
 	}
 };
 
@@ -52,7 +56,9 @@ const signin = async (req, res) => {
 		const { email, password } = req.body;
 
 		if (!email || !password) {
-			return res.status(400).json({ error: "All fields are required" });
+			return res
+				.status(400)
+				.json({ error: "Todos los campos son obligatorios" });
 		}
 
 		const user = await User.findOne({
@@ -60,13 +66,13 @@ const signin = async (req, res) => {
 		});
 
 		if (!user) {
-			return res.status(400).json({ error: "User not found" });
+			return res.status(404).json({ error: "Usuario no encontrado" });
 		}
 
 		const isMatch = await user.comparePassword(password, user.password);
 
 		if (!isMatch) {
-			return res.status(400).json({ error: "Incorrect password" });
+			return res.status(401).json({ error: "Contraseña incorrecta" });
 		}
 
 		const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
@@ -82,7 +88,7 @@ const signin = async (req, res) => {
 			user: { id, username, email: userEmail, roleId },
 		});
 	} catch (error) {
-		return res.status(400).json({ error: error.message });
+		return res.status(500).json({ error: error.message });
 	}
 };
 

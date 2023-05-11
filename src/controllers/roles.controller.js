@@ -1,23 +1,23 @@
 import Role from "../models/roles.js";
+
 const getRoles = async (req, res) => {
 	try {
 		const roles = await Role.findAll();
 
 		if (roles) {
-			res.json({
-				message: "Roles found successfully",
+			return res.status(200).json({
+				message: "Roles encontrados con éxito",
 				data: roles,
 			});
 		} else {
-			res.json({
-				message: "Roles not found",
+			return res.status(404).json({
+				message: "Roles no encontrados",
 				data: {},
 			});
 		}
 	} catch (error) {
 		return res.status(500).json({
-			message: "Something goes wrong",
-			data: {},
+			message: error.message,
 		});
 	}
 };
@@ -31,8 +31,8 @@ const createRole = async (req, res) => {
 		});
 
 		if (role) {
-			return res.status(400).json({
-				message: "Role already exists",
+			return res.status(409).json({
+				message: "El Rol ya existe",
 				data: {},
 			});
 		}
@@ -43,13 +43,13 @@ const createRole = async (req, res) => {
 		});
 
 		if (newRole) {
-			return res.json({
-				message: "Role created successfully",
+			return res.status(201).json({
+				message: "Rol creado con éxito",
 				data: newRole,
 			});
 		} else {
-			return res.json({
-				message: "Role not created",
+			return res.status(400).json({
+				message: "Rol no creado",
 				data: {},
 			});
 		}
@@ -62,9 +62,27 @@ const createRole = async (req, res) => {
 
 const getRole = async (req, res) => {
 	try {
-		res.send("getRole");
+		const { id } = req.params;
+
+		const role = await Role.findOne({
+			where: { id },
+		});
+
+		if (role) {
+			return res.status(200).json({
+				message: "Role encontrado con éxito",
+				data: role,
+			});
+		} else {
+			return res.status(404).json({
+				message: "Role no encontrado",
+				data: {},
+			});
+		}
 	} catch (error) {
-		console.error(error);
+		return res.status(500).json({
+			message: error.message,
+		});
 	}
 };
 
@@ -77,8 +95,8 @@ const deleteRole = async (req, res) => {
 		});
 
 		if (!role) {
-			return res.status(400).json({
-				message: "Role not found",
+			return res.status(404).json({
+				message: "Rol no encontrado",
 				data: {},
 			});
 		}
@@ -88,18 +106,18 @@ const deleteRole = async (req, res) => {
 		});
 
 		if (deletedRole) {
-			return res.json({
-				message: "Role deleted successfully",
+			return res.status(200).json({
+				message: "Rol eliminado con éxito",
 				data: deletedRole,
 			});
 		}
 
-		return res.json({
-			message: "Role not deleted",
+		return res.status(500).json({
+			message: "Rol no se elimina",
 			data: {},
 		});
 	} catch (error) {
-		return res.status(400).json({
+		return res.status(500).json({
 			message: error.message,
 		});
 	}
@@ -115,8 +133,8 @@ const updateRole = async (req, res) => {
 		});
 
 		if (!role) {
-			return res.status(400).json({
-				message: "Role not found",
+			return res.status(404).json({
+				message: "Rol no encontrado",
 				data: {},
 			});
 		}
@@ -132,14 +150,14 @@ const updateRole = async (req, res) => {
 		);
 
 		if (updatedRole) {
-			return res.json({
-				message: "Role updated successfully",
+			return res.status(200).json({
+				message: "Rol actualizado con éxito",
 				data: updatedRole,
 			});
 		}
 
-		return res.json({
-			message: "Role not updated",
+		return res.status(500).json({
+			message: "Rol no actualizado",
 			data: {},
 		});
 	} catch (error) {

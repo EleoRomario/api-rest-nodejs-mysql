@@ -4,8 +4,10 @@ export const verifyToken = async (req, res, next) => {
 	try {
 		const token = req.headers["x-access-token"];
 
+		console.log("🚀 ~ file: authJwt.js:6 ~ verifyToken ~ token:", token);
+
 		if (!token) {
-			return res.status(403).json({ error: "No token provided" });
+			return res.status(403).json({ error: "No se proporciono token" });
 		}
 
 		const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -17,12 +19,12 @@ export const verifyToken = async (req, res, next) => {
 		});
 
 		if (!user) {
-			return res.status(404).json({ error: "User not found" });
+			return res.status(404).json({ error: "Usuario no encontrado" });
 		}
 
 		next();
 	} catch (error) {
-		return res.status(401).json({ error: "Unauthorized" });
+		return res.status(401).json({ error: "No autorizado" });
 	}
 };
 
@@ -41,9 +43,11 @@ export const isAdmin = async (req, res, next) => {
 			}
 		}
 
-		return res.status(403).json({ error: "Require Admin Role!" });
+		return res
+			.status(403)
+			.json({ error: "Requiere Rol de administrador!" });
 	} catch (error) {
-		return res.status(400).send({ error: error.message });
+		return res.status(500).send({ error: error.message });
 	}
 };
 
@@ -62,9 +66,9 @@ export const isClient = async (req, res, next) => {
 			}
 		}
 
-		return res.status(403).json({ error: "Require Client Role!" });
+		return res.status(403).json({ error: "Requiere rol de cliente!" });
 	} catch (error) {
-		return res.status(400).send({ error: error.message });
+		return res.status(500).send({ error: error.message });
 	}
 };
 
@@ -83,9 +87,9 @@ export const isWorker = async (req, res, next) => {
 			}
 		}
 
-		return res.status(403).json({ error: "Require Workers Role!" });
+		return res.status(403).json({ error: "Requiere rol de trabajador!" });
 	} catch (error) {
-		return res.status(400).send({ error: error.message });
+		return res.status(500).send({ error: error.message });
 	}
 };
 
@@ -104,8 +108,10 @@ export const isAdminOrWorker = async (req, res, next) => {
 			}
 		}
 
-		return res.status(403).json({ error: "Require Admin or Worker Role!" });
+		return res
+			.status(403)
+			.json({ error: "Requiere rol de administrador o trabajador!" });
 	} catch (error) {
-		return res.status(400).send({ error: error.message });
+		return res.status(500).send({ error: error.message });
 	}
 };
